@@ -1,0 +1,18 @@
+{
+  "name": "ecomplexframework",
+  "version": "1.0.0",
+  "description": "Ecomplex Framework",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev" : "nodemon ."
+  },
+  "author": "Carlos Rendon",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
