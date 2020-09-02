@@ -1,9 +1,15 @@
-const { ApolloServer, gql}=require('apollo-server');
+const {ApolloServer}=require('apollo-server');
+const typeDefs = require('./db/schema');
+const resolvers = require('./db/resolvers')
+
 
 //server
-const server = new ApolloServer();
+const server = new ApolloServer({
+  typeDefs,
+  resolvers
+});
 
 //start server
-server.listen().then((url)=>{
-  console.log('Server ready in URL ${url}')
+server.listen({ port: process.env.PORT || 4005 }).then( ({url}) => {
+  console.log(`Server ready in URL ${url}`)
 })
