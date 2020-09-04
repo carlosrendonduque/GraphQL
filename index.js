@@ -1,16 +1,19 @@
 const {ApolloServer}=require('apollo-server');
 const typeDefs = require('./db/schema');
-const resolvers = require('./db/resolvers')
+const resolvers = require('./db/resolvers');
+const connectDB = require('./config/db');
 
+//Connect to Database
+connectDB();
 
 //server
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ()=>{
-    const myContext ="Hi World!";
+    const userId=20;
     return {
-      myContext
+      userId
     }
   }
 

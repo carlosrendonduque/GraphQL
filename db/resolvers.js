@@ -4,7 +4,7 @@
 //Resolvers
 const resolvers ={
   Query: {
-
+    getMicroProcess: () => "Something"
   }
 }
 
