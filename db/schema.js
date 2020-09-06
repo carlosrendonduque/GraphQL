@@ -23,7 +23,7 @@ const typeDefs =gql `
       password: String!
     }
     type Query{
-      getMicroProcess : String
+      getUser (token: String!) : User
     }
     type Mutation{
       newUser (input: UserInput): User

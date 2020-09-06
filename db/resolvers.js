@@ -4,15 +4,18 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config({path: 'variables.env'});
 
 const createToken = (user, secret, expiresIn) =>{
-  console.log(user);
+  //https://jwt.io/
   const {id,email,firstname, lastname}=user;
-  return jwt.sign({id}, secret,{expiresIn})
+  return jwt.sign({id, email, firstname, lastname}, secret,{expiresIn})
 }
 
 //Resolvers
 const resolvers ={
   Query: {
-    getMicroProcess: () => "Something"
+    getUser: async (_, {token}) => {
+      const userId = await jwt.verify(token, process.env.SECRET)
+      return userId
+    }
   },
   Mutation: {
     newUser: async (_, {input} ) => {
