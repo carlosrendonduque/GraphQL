@@ -1,8 +1,33 @@
 const {gql}=require('apollo-server');
 //Schema
 const typeDefs =gql `
+    type User{
+      id: ID
+      firstname: String
+      lastname: String
+      email: String
+      createdat: String
+    }
+    type Token {
+      token: String 
+    }
+    input UserInput{
+      firstname: String!
+      lastname: String!
+      email: String!
+      password: String!
+    }
+
+    input AuthenticateInput{
+      email: String!
+      password: String!
+    }
     type Query{
       getMicroProcess : String
+    }
+    type Mutation{
+      newUser (input: UserInput): User
+      authenticateUser(input: AuthenticateInput): Token
     }
 `;
 
