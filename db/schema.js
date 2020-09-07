@@ -11,6 +11,15 @@ const typeDefs =gql `
     type Token {
       token: String 
     }
+
+    type Microservice{
+      id: ID
+      name: String
+      description: String
+      URL: String
+      createdat: String
+    }
+
     input UserInput{
       firstname: String!
       lastname: String!
@@ -22,12 +31,31 @@ const typeDefs =gql `
       email: String!
       password: String!
     }
+
+    input MicroserviceInput{
+      name: String!
+      description: String!
+      URL: String!
+    }
+
     type Query{
+      #Users
       getUser (token: String!) : User
+      
+      #Microservices
+      getMicroservices:[Microservice]
+      getMicroservice(id: ID!): Microservice
     }
     type Mutation{
+      #Users
       newUser (input: UserInput): User
       authenticateUser(input: AuthenticateInput): Token
+
+      #Microservices
+      newMicroservice(input: MicroserviceInput): Microservice
+      updateMicroservice(id: ID!, input: MicroserviceInput) : Microservice
+      deleteMicroservice(id: ID!) : String
+
     }
 `;
 

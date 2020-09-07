@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Microservice = require('../models/Microservice');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 require('dotenv').config({path: 'variables.env'});
@@ -15,6 +16,23 @@ const resolvers ={
     getUser: async (_, {token}) => {
       const userId = await jwt.verify(token, process.env.SECRET)
       return userId
+    },
+    getMicroservices: async()=>{
+      try {
+        const microservices = await Microservice.find({});
+        return microservices;
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getMicroservice: async(_,{id})=>{
+      //Check if Microservice exists
+      const microservice=await Microservice.findById(id);
+      if (!microservice){
+        throw new Error('Microservice does not exist');
+      }
+      return microservice;
     }
   },
   Mutation: {
@@ -60,6 +78,41 @@ const resolvers ={
        return {
          token: createToken(userExists, process.env.SECRET, '24h')
        }
+
+    },
+
+    newMicroservice: async (_, {input} ) => {
+      try {
+        const microservice = new Microservice(input);
+
+        //Save to DB
+        const result = await microservice.save();
+        return result;
+
+      } catch (error) {
+        console.log(error);
+      }
+
+    },
+
+    updateMicroservice: async(_,{id, input})=>{
+       //Check if Microservice exists
+       let microservice=await Microservice.findById(id);
+       if (!microservice){
+         throw new Error('Microservice does not exist');
+       }
+       //Save to database
+       microservice = await Microservice.findOneAndUpdate({_id: id}, input, {new: true});
+       return microservice;
+    },
+    deleteMicroservice: async(_,{id})=>{
+      let microservice=await Microservice.findById(id);
+       if (!microservice){
+         throw new Error('Microservice does not exist');
+       }
+       //Delete
+       await Microservice.findOneAndDelete({_id: id});
+       return "Microservice deleted";
 
     }
 
