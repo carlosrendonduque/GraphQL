@@ -20,6 +20,16 @@ const typeDefs =gql `
       createdat: String
     }
 
+    type Client{
+      id: ID
+      firstname: String
+      lastname: String
+      company: String
+      email: String
+      phone: String
+      consultant:  ID
+    }
+
     input UserInput{
       firstname: String!
       lastname: String!
@@ -37,6 +47,14 @@ const typeDefs =gql `
       description: String!
       URL: String!
     }
+    
+    input ClientInput{
+      firstname: String!
+      lastname: String!
+      company: String!
+      email: String!
+      phone: String
+    }
 
     type Query{
       #Users
@@ -45,6 +63,10 @@ const typeDefs =gql `
       #Microservices
       getMicroservices:[Microservice]
       getMicroservice(id: ID!): Microservice
+
+      #Clients
+      getClients : [Client]
+      getClientsConsultant : [Client]
     }
     type Mutation{
       #Users
@@ -55,6 +77,9 @@ const typeDefs =gql `
       newMicroservice(input: MicroserviceInput): Microservice
       updateMicroservice(id: ID!, input: MicroserviceInput) : Microservice
       deleteMicroservice(id: ID!) : String
+
+      #Clients
+      newClient(input: ClientInput ) : Client
 
     }
 `;
