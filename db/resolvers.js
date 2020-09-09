@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Microservice = require('../models/Microservice');
+const Client = require('../models/Client');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 require('dotenv').config({path: 'variables.env'});
@@ -33,6 +34,26 @@ const resolvers ={
         throw new Error('Microservice does not exist');
       }
       return microservice;
+    },
+    getClients: async()=>{
+      try {
+        const clients = await Client.find({});
+        return clients;
+
+      } catch (error) {
+        console.log(error);
+      }
+
+    },
+    getClientsConsultant: async(_, {}, ctx)=>{
+      try {
+        const clients = await Client.find({consultant: ctx.user.id.toString()});
+        return clients;
+
+      } catch (error) {
+        console.log(error);
+      }
+
     }
   },
   Mutation: {
@@ -41,6 +62,7 @@ const resolvers ={
 
       //User registered?
       const userExists = await User.findOne({email});
+      
       if (userExists) {
         throw new Error('User already registered');
 
@@ -114,6 +136,36 @@ const resolvers ={
        await Microservice.findOneAndDelete({_id: id});
        return "Microservice deleted";
 
+    },
+    newClient: async (_, {input}, ctx)=>{
+      
+      console.log(ctx);
+      const{email}=input
+      //Check if client exists
+      //console.log(input);
+      const clientExists = await Client.findOne({email});
+      
+      if (clientExists){
+        throw new Error('This client is already registered');
+      }
+      
+
+      const newClient = new Client(input);
+
+      //Assign consultant
+      newClient.consultant =ctx.user.id;
+
+      //Save to the database
+      try {
+        
+        const result = await newClient.save();
+
+        return result;
+      } catch (error) {
+        console.log(error);
+      }
+      
+    
     }
 
   } 
