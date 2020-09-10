@@ -210,6 +210,42 @@ const resolvers ={
        return "Client deleted";
 
     },
+    newWorkflow: async (_, {input}, ctx) => {
+      
+      const { client } = input
+      //Check if client exists
+      let clientExists=await Client.findById(client);
+      if (!clientExists){
+         throw new Error('Client does not exist');
+       }
+
+      //Check if client belongs to Consultant
+      if (clientExists.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+      //Check stock
+      for await(const  microservice_article of input.workflow) {
+        const {id} = microservice_article;
+        const microservice = await Microservice.findById(id);
+        if (microservice_article.quantity > microservice.licenses){
+          throw new Error(`The microservice : ${microservice.name} exceeds the number of licenses`);  
+        }
+
+      }
+
+      //Create new workflow
+
+      
+      //Assign consutat
+
+      
+
+      //Save to database
+
+
+
+
+    }
 
   } 
 }

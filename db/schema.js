@@ -17,6 +17,8 @@ const typeDefs =gql `
       name: String
       description: String
       URL: String
+      licenses: Int
+      price: Float
       createdat: String
     }
 
@@ -28,6 +30,24 @@ const typeDefs =gql `
       email: String
       phone: String
       consultant:  ID
+    }
+    
+    type Workflow{
+      id: ID!
+      workflow:[WorkflowGroup]
+      total_microservices: Float
+      client: ID
+      consultant: ID
+      createdat: String
+      state: WorkflowState
+      
+    }
+
+    type WorkflowGroup{
+      id: ID
+      quantity: Int
+      name: String
+      price: Float
     }
 
     input UserInput{
@@ -46,6 +66,8 @@ const typeDefs =gql `
       name: String!
       description: String!
       URL: String!
+      licenses: Int!
+      price: Float!
     }
     
     input ClientInput{
@@ -56,10 +78,31 @@ const typeDefs =gql `
       phone: String
     }
 
+    input WorkflowMicroserviceInput {
+      id: ID
+      quantity: Int
+      name: String
+      price: Float
+    }
+
+    input WorkflowInput {
+      workflow:[WorkflowMicroserviceInput]
+      total_microservices: Float!
+      client: ID!
+      state: WorkflowState
+
+    }
+    enum WorkflowState{
+      PENDING
+      COMPLETED
+      CANCELED
+    }
+
+
     type Query{
       #Users
       getUser (token: String!) : User
-      
+  
       #Microservices
       getMicroservices:[Microservice]
       getMicroservice(id: ID!): Microservice
@@ -83,6 +126,9 @@ const typeDefs =gql `
       newClient(input: ClientInput ) : Client
       updateClient(id: ID!, input: ClientInput) : Client
       deleteClient(id: ID!) : String
+
+      #Workflows
+      newWorkflow(input: WorkflowInput ): Workflow
 
 
     }

@@ -15,6 +15,16 @@ const MicroservicesSchema = mongoose.Schema({
     required: true,
     trim: true
   },
+  licenses:{
+    type: Number,
+    required: true,
+    trim: true
+  },
+  price:{
+    type: Number,
+    required: true,
+    trim: true
+  },
   createdat:{
     type: Date,
     default: Date.now()
