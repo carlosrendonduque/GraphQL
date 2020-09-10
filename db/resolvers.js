@@ -54,6 +54,20 @@ const resolvers ={
         console.log(error);
       }
 
+    },
+    getClient: async (_, {id}, ctx)=>{
+      //Check if Client exists
+      const client = await Client.findById(id);
+      
+      if (!client){
+        throw new Error('Client does not exist');
+      }
+      //Who has created the client
+      if (client.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+
+      return client;
     }
   },
   Mutation: {
@@ -166,7 +180,36 @@ const resolvers ={
       }
       
     
-    }
+    },
+    updateClient: async(_, {id, input}, ctx)=>{
+      //Check if Clients exists
+      let client=await Client.findById(id);
+      if (!client){
+        throw new Error('Client does not exist');
+      }
+      //Check if the correct consultant is editing
+      if (client.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+      //Save to database
+      client = await Client.findOneAndUpdate({_id: id}, input, {new: true});
+      return client;
+    },
+    deleteClient: async(_,{id}, ctx)=>{
+      let client=await Client.findById(id);
+       if (!client){
+         throw new Error('Client does not exist');
+       }
+       //Check if current user can delete this client
+      if (client.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+
+       //Delete
+       await Client.findOneAndDelete({_id: id});
+       return "Client deleted";
+
+    },
 
   } 
 }

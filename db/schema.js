@@ -67,6 +67,7 @@ const typeDefs =gql `
       #Clients
       getClients : [Client]
       getClientsConsultant : [Client]
+      getClient(id: ID!) : Client
     }
     type Mutation{
       #Users
@@ -80,6 +81,9 @@ const typeDefs =gql `
 
       #Clients
       newClient(input: ClientInput ) : Client
+      updateClient(id: ID!, input: ClientInput) : Client
+      deleteClient(id: ID!) : String
+
 
     }
 `;
