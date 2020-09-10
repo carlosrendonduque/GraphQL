@@ -1,8 +1,10 @@
 const User = require('../models/User');
 const Microservice = require('../models/Microservice');
 const Client = require('../models/Client');
+const Workflow = require('../models/Workflow');
 const bcryptjs = require('bcryptjs');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+
 require('dotenv').config({path: 'variables.env'});
 
 const createToken = (user, secret, expiresIn) =>{
@@ -68,8 +70,46 @@ const resolvers ={
       }
 
       return client;
+    },
+    getWorkflows: async () => {
+      try {
+        const workflows = await Workflow.find({});
+        return workflows;
+        
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getWorkflowsConsultant: async(_, {}, ctx)=>{
+      try {
+        const workflows = await Workflow.find({consultant: ctx.user.id.toString()});
+        return workflows;
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getWorkflow: async (_, {id}, ctx)=>{
+      //Check if Workflow exists
+      const workflow = await Workflow.findById(id);
+      
+      if (!workflow){
+        throw new Error('Workflow does not exist');
+      }
+      //Who has created the workflow
+      if (workflow.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+
+      return workflow;
+    },
+    getWorkflowsState: async (_, {state}, ctx)=>{
+      
+      const workflows = await Workflow.find({consultant: ctx.user.id, state });
+   
+      return workflows;
     }
-  },
+    },
   Mutation: {
     newUser: async (_, {input} ) => {
       const {email, password}=input;
@@ -228,22 +268,83 @@ const resolvers ={
         const {id} = microservice_article;
         const microservice = await Microservice.findById(id);
         if (microservice_article.quantity > microservice.licenses){
-          throw new Error(`The microservice : ${microservice.name} exceeds the number of licenses`);  
+          throw new Error(`The microservice : ${microservice.name} exceeds the number of available licenses`);  
+        } else{
+          //subtract quantity from available
+          microservice.licenses=microservice.licenses-microservice_article.quantity;
+          await microservice.save();
         }
 
       }
 
       //Create new workflow
+      const newWorkflow = new Workflow(input);
 
-      
+
       //Assign consutat
-
-      
+      newWorkflow.consultant=ctx.user.id;
 
       //Save to database
+      const result = await newWorkflow.save();
+      return result;
 
+    },
+    updateWorkflow: async(_, {id, input}, ctx)=>{
+      
+      const { client } = input
 
+      //Check if Workflow exists
+      let workflowExists=await Workflow.findById(id);
+      if (!workflowExists){
+        throw new Error('Workflow does not exist');
+      }
 
+      //Check if Client exists
+      let clientExists=await Client.findById(client);
+      if (!clientExists){
+         throw new Error('Client does not exist');
+       }
+
+      //Check if the correct consultant is editing
+      if (clientExists.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+
+      //Check stock
+      if (input.workflow){
+        for await(const  microservice_article of input.workflow) {
+          const {id} = microservice_article;
+          const microservice = await Microservice.findById(id);
+          if (microservice_article.quantity > microservice.licenses){
+            throw new Error(`The microservice : ${microservice.name} exceeds the number of available licenses`);  
+          } else{
+            //subtract quantity from available
+            microservice.licenses=microservice.licenses-microservice_article.quantity;
+            await microservice.save();
+          }
+  
+        }
+      }
+
+      //Save to database
+      const result =  await Workflow.findOneAndUpdate({_id: id}, input, {new: true});
+      return result;
+    },
+    deleteWorkflow: async(_,{id}, ctx)=>{
+
+      //Check if Workflow exists
+      const workflow=await Workflow.findById(id);
+      if (!workflow){
+        throw new Error('Workflow does not exist');
+      }
+      //Check if the correct consultant is editing
+      if (workflow.consultant.toString() !== ctx.user.id){
+        throw new Error('Error with credentials');
+      }
+
+       //Delete
+       await Workflow.findOneAndDelete({_id: id});
+       return "Workflow deleted";
 
     }
 

@@ -87,8 +87,8 @@ const typeDefs =gql `
 
     input WorkflowInput {
       workflow:[WorkflowMicroserviceInput]
-      total_microservices: Float!
-      client: ID!
+      total_microservices: Float
+      client: ID
       state: WorkflowState
 
     }
@@ -111,6 +111,14 @@ const typeDefs =gql `
       getClients : [Client]
       getClientsConsultant : [Client]
       getClient(id: ID!) : Client
+
+      #Workflows
+      getWorkflows : [Workflow]
+      getWorkflowsConsultant : [Workflow]
+      getWorkflow(id: ID!) : Workflow
+      getWorkflowsState(state: String!): [Workflow]
+
+      
     }
     type Mutation{
       #Users
@@ -129,6 +137,9 @@ const typeDefs =gql `
 
       #Workflows
       newWorkflow(input: WorkflowInput ): Workflow
+      updateWorkflow(id: ID!, input: WorkflowInput) : Workflow
+      deleteWorkflow(id: ID!) : String
+
 
 
     }

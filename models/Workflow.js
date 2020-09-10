@@ -9,12 +9,12 @@ const WorkflowsSchema = mongoose.Schema({
         required: true
     },
     client: {
-        type.mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Client'
     },
     consultant: {
-        type.mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     },
