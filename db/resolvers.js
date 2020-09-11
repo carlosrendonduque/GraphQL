@@ -108,7 +108,59 @@ const resolvers ={
       const workflows = await Workflow.find({consultant: ctx.user.id, state });
    
       return workflows;
-    }
+    },
+    bestClients: async()=>{
+      const clients= await Workflow.aggregate([
+        {$match:{state: "COMPLETED"}},
+        {$group: {
+          _id: "$client",
+          total: {$sum: '$total_microservices'}  
+        }},
+        {
+          $lookup: {
+            from: 'clients',
+            localField: '_id',
+            foreignField: "_id",
+            as : "client"
+          }
+        },
+        {
+          $limit: 10
+        },
+        {
+          $sort: { total: -1 }
+        }
+      ]);
+      return clients;
+    },
+    bestConsultants: async()=>{
+      const consultants = await Workflow.aggregate([
+        {$match:{state: "COMPLETED"}},
+        {$group: {
+          _id: "$consultant",
+          total: {$sum: '$total_microservices'}  
+        }},
+        {
+          $lookup: {
+            from: 'users',
+            localField: '_id',
+            foreignField: "_id",
+            as : "consultant"
+          }
+        },
+        {
+          $limit: 3
+        },
+        {
+          $sort: {total: -1}
+        }
+      ]);
+      return consultants;
+    },
+    lookMicroservice: async(_, {text})=>{
+      const microservices = await Microservice.find({$text: {$search: text}}).limit(10)
+      return microservices;
+    } 
     },
   Mutation: {
     newUser: async (_, {input} ) => {

@@ -50,6 +50,16 @@ const typeDefs =gql `
       price: Float
     }
 
+    type TopClient{
+      total: Float
+      client: [Client]
+    }
+
+    type TopConsultant{
+      total: Float
+      consultant: [User]
+    }
+
     input UserInput{
       firstname: String!
       lastname: String!
@@ -118,7 +128,11 @@ const typeDefs =gql `
       getWorkflow(id: ID!) : Workflow
       getWorkflowsState(state: String!): [Workflow]
 
-      
+      #Advanced queries
+      bestClients: [TopClient]
+      bestConsultants: [TopConsultant]
+      lookMicroservice (text: String!): [Microservice]
+
     }
     type Mutation{
       #Users

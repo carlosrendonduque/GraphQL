@@ -32,4 +32,5 @@ const MicroservicesSchema = mongoose.Schema({
 
 });
 
-  module.exports = mongoose.model('Microservice', MicroservicesSchema);
+MicroservicesSchema.index({name:'text'});
+module.exports = mongoose.model('Microservice', MicroservicesSchema);
