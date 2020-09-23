@@ -4,7 +4,7 @@ const WorkflowsSchema = mongoose.Schema({
         type: Array,
         required: true
     },
-    total_microservices:{
+    total:{
         type: Number,
         required: true
     },

@@ -83,7 +83,8 @@ const resolvers ={
     },
     getWorkflowsConsultant: async(_, {}, ctx)=>{
       try {
-        const workflows = await Workflow.find({consultant: ctx.user.id.toString()});
+        const workflows = await Workflow.find({consultant: ctx.user.id}).populate('client');
+        console.log(workflows);
         return workflows;
 
       } catch (error) {
@@ -115,7 +116,7 @@ const resolvers ={
         {$match:{state: "COMPLETED"}},
         {$group: {
           _id: "$client",
-          total: {$sum: '$total_microservices'}  
+          total: {$sum: '$total'}  
         }},
         {
           $lookup: {
@@ -139,7 +140,7 @@ const resolvers ={
         {$match:{state: "COMPLETED"}},
         {$group: {
           _id: "$consultant",
-          total: {$sum: '$total_microservices'}  
+          total: {$sum: '$total'}  
         }},
         {
           $lookup: {

@@ -35,8 +35,8 @@ const typeDefs =gql `
     type Workflow{
       id: ID!
       workflow:[WorkflowGroup]
-      total_microservices: Float
-      client: ID
+      total: Float
+      client: Client
       consultant: ID
       createdat: String
       state: WorkflowState
@@ -97,7 +97,7 @@ const typeDefs =gql `
 
     input WorkflowInput {
       workflow:[WorkflowMicroserviceInput]
-      total_microservices: Float
+      total: Float
       client: ID
       state: WorkflowState
 
